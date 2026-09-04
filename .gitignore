@@ -1,0 +1,23 @@
+# Environment files and local secrets
+.env
+.env.*
+!.env.example
+
+# Dependencies and build output
+node_modules/
+vendor/
+dist/
+
+# Local databases, logs, and editor files
+*.sqlite
+*.sqlite-journal
+*.log
+.DS_Store
+.idea/
+.vscode/*
+!.vscode/extensions.json
+
+# Laravel runtime files
+backend/storage/*.key
+backend/storage/logs/*
+backend/bootstrap/cache/*.php
