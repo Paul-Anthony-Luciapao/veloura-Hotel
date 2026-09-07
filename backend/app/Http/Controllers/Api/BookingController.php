@@ -17,30 +17,22 @@ class BookingController extends Controller
             'phone' => 'required|string|max:255',
             'service_id' => 'required|exists:services,id',
             'start_date' => 'required|date',
-            'end_date' => 'required|date|after_or_equal:start_date',
+            'end_date' => 'required|date|after:start_date',
             'start_time' => 'required|date_format:H:i',
             'end_time' => 'required|date_format:H:i',
         ]);
 
-        if ($request->start_date === $request->end_date && $request->end_time <= $request->start_time) {
-            return response()->json([
-                'message' => 'The end time must be after the start time.',
-            ], 422);
-        }
-
         $service = Service::findOrFail($request->service_id);
 
-        $conflict = Booking::where('service_id', $request->service_id)
+        $bookedRooms = Booking::where('service_id', $request->service_id)
             ->where('status', '!=', 'cancelled')
-            ->whereRaw(
-                "TIMESTAMP(start_date, start_time) < ? AND TIMESTAMP(end_date, end_time) > ?",
-                ["{$request->end_date} {$request->end_time}", "{$request->start_date} {$request->start_time}"]
-            )
-            ->exists();
+            ->where('start_date', '<', $request->end_date)
+            ->where('end_date', '>', $request->start_date)
+            ->count();
 
-        if ($conflict) {
+        if ($bookedRooms >= $service->total_rooms) {
             return response()->json([
-                'message' => 'This service is already booked for the selected dates and times.'
+                'message' => 'This room type is fully booked for the selected dates.'
             ], 409);
         }
 

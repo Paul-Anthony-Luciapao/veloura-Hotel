@@ -20,8 +20,24 @@ const BookingForm = () => {
   const [services, setServices] = useState([])
 
   useEffect(() => {
-    fetchServices().then(setServices).catch((error) => alert(error.message))
-  }, [])
+    fetchServices({
+      startDate: form.startDate,
+      endDate: form.endDate,
+    })
+      .then((availableServices) => {
+        setServices(availableServices)
+        setForm((current) => {
+          const selectedService = availableServices.find(
+            (service) => String(service.id) === current.serviceId,
+          )
+
+          return selectedService && selectedService.available_rooms === 0
+            ? { ...current, serviceId: '' }
+            : current
+        })
+      })
+      .catch((error) => alert(error.message))
+  }, [form.startDate, form.endDate])
 
   const handleChange = (event) => {
     const { name, value } = event.target
@@ -84,10 +100,15 @@ const BookingForm = () => {
                 onChange={handleChange}
                 className="flex h-10 w-full rounded-md border border-slate-200 bg-white px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-slate-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-400 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
               >
-                <option value="">Choose a service</option>
+                <option value="">Choose a room type</option>
                 {services.map((service) => (
-                  <option key={service.id} value={service.id}>
+                  <option key={service.id} value={service.id} disabled={service.available_rooms === 0}>
                     {service.name}
+                    {service.available_rooms === 0
+                      ? ' - Fully booked'
+                      : service.available_rooms
+                        ? ` - ${service.available_rooms} available`
+                        : ''}
                   </option>
                 ))}
               </select>

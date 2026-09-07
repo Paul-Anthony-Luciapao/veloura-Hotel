@@ -32,17 +32,22 @@ const Rooms = () => {
         </p>
         <h1 className="hero-rise hero-rise-delay-1 text-4xl font-bold tracking-tight">Rooms that fit every trip.</h1>
 
-        <div className="hero-rise hero-rise-delay-2 mt-8 flex flex-wrap justify-end gap-3">
-          {roomCategories.map((category) => (
-            <Button
-              key={category}
-              type="button"
-              variant={selectedRoom === category ? 'default' : 'outline'}
-              onClick={() => setSelectedRoom(category)}
-            >
-              {category}
-            </Button>
-          ))}
+        <div className="hero-rise hero-rise-delay-2 mt-8 flex justify-end">
+          <label className="sr-only" htmlFor="room-category">
+            Choose a room category
+          </label>
+          <select
+            id="room-category"
+            value={selectedRoom}
+            onChange={(event) => setSelectedRoom(event.target.value)}
+            className="h-10 rounded-4xl border border-slate-200 bg-white px-4 text-sm font-medium text-slate-900 shadow-sm outline-none transition focus:border-slate-400 focus:ring-2 focus:ring-slate-300"
+          >
+            {roomCategories.map((category) => (
+              <option key={category} value={category}>
+                {category === 'All' ? 'All rooms' : category}
+              </option>
+            ))}
+          </select>
         </div>
 
         <div className="hero-rise hero-rise-delay-2 mt-10 grid gap-6 md:grid-cols-2">

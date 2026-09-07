@@ -2,8 +2,16 @@
 // In local development, Vite proxies /api requests to the backend server.
 const API_BASE_URL = import.meta.env.VITE_API_URL || '/api'
 
-export async function fetchServices() {
-  const response = await fetch(`${API_BASE_URL}/services`)
+export async function fetchServices({ startDate = '', endDate = '' } = {}) {
+  const params = new URLSearchParams()
+
+  if (startDate && endDate) {
+    params.set('start_date', startDate)
+    params.set('end_date', endDate)
+  }
+
+  const query = params.toString()
+  const response = await fetch(`${API_BASE_URL}/services${query ? `?${query}` : ''}`)
 
   if (!response.ok) {
     throw new Error('Failed to load services from the backend.')
